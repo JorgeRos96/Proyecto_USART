@@ -1,0 +1,9 @@
+.\objects\usart.o: USART.c
+.\objects\usart.o: USART.h
+.\objects\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\usart.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_USART.h
+.\objects\usart.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_Common.h
+.\objects\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
