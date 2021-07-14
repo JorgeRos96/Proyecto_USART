@@ -397,6 +397,16 @@
               <FileType>5</FileType>
               <FilePath>.\USART.h</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f4xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f4xx_hal_msp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -3,4 +3,4 @@
 #include "Driver_USART.h"
 
 int init_USART (void);
-int tx_USART (char ch []);
+int tx_USART (char ch);
