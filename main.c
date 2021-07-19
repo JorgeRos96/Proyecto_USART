@@ -41,8 +41,6 @@
 #include "main.h"
 #include "USART.h"
 
-
-
 #ifdef _RTE_
 #include "RTE_Components.h"             // Component selection
 #endif
@@ -85,7 +83,7 @@ uint32_t HAL_GetTick (void) {
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-char buf [];
+uint8_t buf [] = "Hello World";
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -98,7 +96,7 @@ static void Error_Handler(void);
   */
 int main(void)
 {
-int status = 0;
+
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
        - Systick timer is configured by default as source of time base, but user 
@@ -116,9 +114,7 @@ int status = 0;
 
   /* Add your application code here
      */
-	
-	status = init_USART();
-
+	init_USART();
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
   osKernelInitialize ();
@@ -129,12 +125,10 @@ int status = 0;
   /* Start thread execution */
   osKernelStart();
 #endif
-
-sprintf (buf,"\n\r prueba\n\r");
-for (int i = 0; i<strlen(buf);i++){
-	status = tx_USART(buf[i]);
+for (int i = 0; i< sizeof(buf);i++){
+	tx_USART(buf[i]);
 }
-	/* Infinite loop */
+  /* Infinite loop */
   while (1)
   {
   }
@@ -175,11 +169,11 @@ static void SystemClock_Config(void)
 
   /* Enable HSE Oscillator and activate PLL with HSE as source */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 50;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -193,7 +187,7 @@ static void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;  
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
   if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
