@@ -34,37 +34,6 @@
 #include "main.h"
 #include "USART.h"
 
-#ifdef _RTE_
-#include "RTE_Components.h"             // Component selection
-#endif
-#ifdef RTE_CMSIS_RTOS2                  // when RTE component CMSIS RTOS2 is used
-#include "cmsis_os2.h"                  // ::CMSIS:RTOS2
-#endif
-
-#ifdef RTE_CMSIS_RTOS2_RTX5
-/**
-  * Override default HAL_GetTick function
-  */
-uint32_t HAL_GetTick (void) {
-  static uint32_t ticks = 0U;
-         uint32_t i;
-
-  if (osKernelGetState () == osKernelRunning) {
-    return ((uint32_t)osKernelGetTickCount ());
-  }
-
-  /* If Kernel is not running wait approximately 1 ms then increment 
-     and return auxiliary tick counter value */
-  for (i = (SystemCoreClock >> 14U); i > 0U; i--) {
-    __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
-    __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
-  }
-  return ++ticks;
-}
-
-#endif
-
-
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
@@ -107,16 +76,6 @@ int main(void)
 	if (init_USART() != 0)
 		Error_Handler(2);
 	
-#ifdef RTE_CMSIS_RTOS2
-  /* Initialize CMSIS-RTOS2 */
-  osKernelInitialize ();
-
-  /* Create thread functions that start executing, 
-  Example: osThreadNew(app_main, NULL, NULL); */
-
-  /* Start thread execution */
-  osKernelStart();
-#endif
 	
 	/* Texto que se desea enviar*/
 	size = sprintf(buf,"\r Texto de prueba satisfactoria\n");
