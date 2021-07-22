@@ -1,4 +1,6 @@
 #include "USART.h"
+#include "stm32f4xx.h" 
+
 
 extern ARM_DRIVER_USART Driver_USART3;
 static ARM_DRIVER_USART * USARTdrv = &Driver_USART3;
@@ -28,7 +30,7 @@ int init_USART (void){
 	return status;
 }
 
-int tx_USART (int ch ){
+int tx_USART (uint8_t ch ){
 	int status = 0;
 	ARM_USART_STATUS st;
 	
@@ -37,7 +39,8 @@ int tx_USART (int ch ){
   buf[0] = ch;
 	
 	status = USARTdrv->Send(buf, 1);
-	st = USARTdrv->GetStatus();
-	while(st.tx_busy) 	st = USARTdrv->GetStatus();
+//	st = USARTdrv->GetStatus();
+//	while(!(USARTdrv->SR & (1<<6))) 	st = USARTdrv->GetStatus();
+	while (!(USART3->SR & (1<<6)));
 	return status;
 }

@@ -90,7 +90,6 @@ void HAL_MspDeInit(void)
    */
 }
 
-
 /**
   * @}
   */

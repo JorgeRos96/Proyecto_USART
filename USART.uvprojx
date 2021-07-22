@@ -388,6 +388,16 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f4xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f4xx_it.c</FilePath>
+            </File>
+            <File>
               <FileName>USART.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USART.c</FilePath>
@@ -396,16 +406,6 @@
               <FileName>USART.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\USART.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_msp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\stm32f4xx_hal_msp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -492,12 +492,6 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="USART" Cvendor="Keil" Cversion="1.7.9" condition="STM32F4 HAL DMA RCC">
-        <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
-        <targetInfos>
-          <targetInfo name="Target 1"/>
-        </targetInfos>
-      </component>
       <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="2.6.3" condition="STM32F4 CMSIS">
         <package name="STM32F4xx_DFP" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="2.15.0"/>
         <targetInfos>
@@ -506,6 +500,30 @@
       </component>
     </components>
     <files>
+      <file attr="config" category="source" name="CMSIS\RTOS2\RTX\Config\RTX_Config.c" version="5.1.0">
+        <instance index="0" removed="1">RTE\CMSIS\RTX_Config.c</instance>
+        <component Capiversion="2.1.3" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cvendor="ARM" Cversion="5.5.2" condition="RTOS2 RTX5"/>
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.7.0"/>
+        <targetInfos/>
+      </file>
+      <file attr="config" category="header" name="CMSIS\RTOS2\RTX\Config\RTX_Config.h" version="5.5.1">
+        <instance index="0" removed="1">RTE\CMSIS\RTX_Config.h</instance>
+        <component Capiversion="2.1.3" Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Library" Cvendor="ARM" Cversion="5.5.2" condition="RTOS2 RTX5"/>
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.7.0"/>
+        <targetInfos/>
+      </file>
+      <file attr="config" category="header" name="Config\DV_Config.h" version="2.0.0">
+        <instance index="0" removed="1">RTE\CMSIS_Driver_Validation\DV_Config.h</instance>
+        <component Cclass="CMSIS Driver Validation" Cgroup="Framework" Cvendor="ARM" Cversion="2.0.0" condition="CMSIS Core with RTOS and STDOUT"/>
+        <package license="LICENSE.txt" name="CMSIS-Driver_Validation" schemaVersion="1.4.9" supportContact="http://silver.arm.com/support" url="http://www.keil.com/pack/" vendor="ARM" version="2.0.0"/>
+        <targetInfos/>
+      </file>
+      <file attr="config" category="header" name="Config\DV_USART_Config.h" version="1.0.0">
+        <instance index="0" removed="1">RTE\CMSIS_Driver_Validation\DV_USART_Config.h</instance>
+        <component Cclass="CMSIS Driver Validation" Cgroup="USART" Cvendor="ARM" Cversion="1.4.0" condition="CMSIS Driver Validation USART"/>
+        <package license="LICENSE.txt" name="CMSIS-Driver_Validation" schemaVersion="1.4.9" supportContact="http://silver.arm.com/support" url="http://www.keil.com/pack/" vendor="ARM" version="2.0.0"/>
+        <targetInfos/>
+      </file>
       <file attr="config" category="header" name="CMSIS\Driver\Config\RTE_Device.h" version="2.4.5">
         <instance index="0">RTE\Device\STM32F429ZITx\RTE_Device.h</instance>
         <component Capiversion="1.0.0" Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cvendor="Keil" Cversion="1.7.9" condition="STM32F4 Framework Classic"/>
