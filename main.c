@@ -2,38 +2,31 @@
   ******************************************************************************
   * @file    Templates/Src/main.c 
   * @author  MCD Application Team
-  * @brief   STM32F4xx HAL API Template project 
+  * @brief   Proyecto que realiza el envío de datos del microcontrolador al PC. 
+	*					 Se realiza la comunicación mediante USART y recibe los datos 
+	*					 enviados desde el micro en un terminal del PC como Realterm o
+	*					 Teraterm. 
+	*
+	*					 Para la realización de este proyecto se ha empleado el CMSIS driver 
+	*					 para el control de la USART3 del microcontrolador. Se envían los 
+	*					 datos a traves del cable USB que conecta el microcontrolador con el
+	*					 PC. 
+	*					 Se configuran los pines de tx y rx de la USART en el RTE_Device.h 
+	*					 que son:
+	*							-Pin de tx: PD8
+	*							-Pin de rx: PD9
+	*
+	*					 Se ha configurado el proyecto para trabajar a la máxima frecuencia 
+	*					 a la que puede trabajar el micro, 180 MHz, dado que cuanto mayor 
+	*					 sea la frecuencia mejor va a ser la comunicacion serie. Se utiliza
+	*					 el PLL con el HSI como fuente de reloj.
+	*						
   *
   * @note    modified by ARM
   *          The modifications allow to use this file as User Code Template
   *          within the Device Family Pack.
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
+
   ******************************************************************************
   */
 
@@ -71,28 +64,15 @@ uint32_t HAL_GetTick (void) {
 
 #endif
 
-/** @addtogroup STM32F4xx_HAL_Examples
-  * @{
-  */
 
-/** @addtogroup Templates
-  * @{
-  */
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-uint8_t buf [] = "Hello World";
-uint32_t PCLK1frec = 0;
-uint32_t PCLK2frec = 0;
-uint32_t SYSCLKfrec = 0;
-uint32_t HCLKfrec = 0;
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
-static void Error_Handler(void);
+static void Error_Handler(int fallo);
 
-/* Private functions ---------------------------------------------------------*/
+char buf[100];
+int size = 0;
+
 /**
   * @brief  Main program
   * @param  None
@@ -110,15 +90,22 @@ int main(void)
              handled in milliseconds basis.
        - Low Level Initialization
      */
-  HAL_Init();
+  if (HAL_Init() != HAL_OK)
+		Error_Handler(0);
 
-  /* Configure the system clock to 168 MHz */
+  /* Inicialización y configuración del reloj a 180 MHz */
   SystemClock_Config();
- // SystemCoreClockUpdate();
 
-  /* Add your application code here
-     */
-	init_USART();
+	/* Inicialización de la USART a traves de la función init_USART de la libreria USART
+	*	 y habilitación de la transmisión
+	*							- Baudrate = 9600 baud
+	*							- Word length = 8 bits
+	*							- Un bit de stop
+	*							- Sin bit de paridad
+	*							- Sin control de flujo
+	*/
+	if (init_USART() != 0)
+		Error_Handler(2);
 	
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
@@ -131,12 +118,11 @@ int main(void)
   osKernelStart();
 #endif
 	
-	SYSCLKfrec = HAL_RCC_GetSysClockFreq();
-	HCLKfrec = HAL_RCC_GetHCLKFreq();
-	PCLK1frec = HAL_RCC_GetPCLK1Freq();
-	PCLK2frec = HAL_RCC_GetPCLK2Freq();
-	for (int i; i< sizeof(buf); i++)
-	tx_USART(buf[i]);
+	/* Texto que se desea enviar*/
+	size = sprintf(buf,"\r Texto de prueba satisfactoria\n");
+	/* Envío del array al terminal a traves de la función tx_USART de la librería USART*/
+	if (tx_USART(buf, size) != 0)
+		Error_Handler(3);
 
   /* Infinite loop */
   while (1)
@@ -145,15 +131,17 @@ int main(void)
 }
 
 /**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow : 
+  * @brief  Función de configuración del reloj del sistema en el que se utiliza
+	*					como fuente de reloj del sistema el PLL con el HSI como fuente de 
+	*					reloj. Se configura una frecuencia del sistema de 180 MHz.
+  *         Se configuran los paramteros de la siguiente manera: 
   *            System Clock source            = PLL (HSI)
   *            SYSCLK(Hz)                     = 180000000
   *            HCLK(Hz)                       = 180000000
   *            AHB Prescaler                  = 1
   *            APB1 Prescaler                 = 4
   *            APB2 Prescaler                 = 2
-  *            HSE Frequency(Hz)              = 180000000
+  *            HSI Frequency(Hz)              = 16000000
   *            PLL_M                          = 8
   *            PLL_N                          = 180
   *            PLL_P                          = 2
@@ -175,13 +163,15 @@ static void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
+	
+  /** Se configura el HSI como fuente de reloj del PLL y se configuran
+	* 	los parametros del PLL para ajusta la frecuencia a 180 MHz con una
+	* 	frecuencia del HSI de 16 MHZ (por defecto).
+	* 	SYSCLK =[(16MHz(frecuencia HSI)/8(PLLM))*180 (PLLN)]/2 (PLLP) = 180 MHz
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
@@ -190,15 +180,21 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+    Error_Handler(1);
   }
-  /** Activate the Over-Drive mode
+  /** Se activa el modo de Over Drive para poder alcanzar los 180 MHz
+	* 	como frecuencia del sistema
   */
   if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
-    Error_Handler();
+    Error_Handler(1);
   }
-  /** Initializes the CPU, AHB and APB buses clocks
+  /** Se selecciona el PLL como fuente de reloj del sistema y se configuran los parametros
+	*		para configurar el HCLK, PCLK1 y PCLK2. La frecuencia máxima del HCLK es 180 MHZ, la 
+	*		frecuencia máxima del PCLK1 es de 45 MHZ y la frecuencia máxima del PCLK2 es de 90 MHz
+	*		HCLK = SYSCK/AHB = 180 MHz / 1 = 180 MHz
+	*		PCLK1 = HCLK/APB1 = 180 MHz / 4 = 45 MHZ
+	*		PCLK2 = HCLK/APB2 = 180 MHz / 2 = 90 MHZ
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -209,52 +205,36 @@ static void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
-    Error_Handler();
+    Error_Handler(1);
   }
 
 }
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
+  * @brief  Función que se realiza cuando se ha producido algun error.
+	* @param  fallo: Variable que recoge el error producido
   * @retval None
   */
-static void Error_Handler(void)
+static void Error_Handler(int fallo)
 {
-  /* User may add here some code to deal with this error */
+	if(fallo == 0)
+	/* Mensaje si se ha producido un error en la inicializacón de la librería HAL*/
+	printf(buf,"\r Se ha producido un error al inicializar la librería HAL\n");
+	else if (fallo == 1)
+	/* Mensaje si se ha producido un error en la inicializacón del reloj del sistema*/
+	printf(buf,"\r Se ha producido un error al inicializar el reloj del sistema\n");
+		else if(fallo == 2)
+	/* Mensaje si se ha producido un error en la inicializacón de la USART*/
+	printf(buf,"\r Se ha producido un error al inicializar la USART\n");
+		else if (fallo == 3)
+	/* Mensaje si se ha producido un error en el envío de datos de la USART*/
+	printf(buf,"\r Se ha producido un error al enviar datos por la USART\n");
   while(1)
   {
+		
   }
 }
 
-#ifdef  USE_FULL_ASSERT
 
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while (1)
-  {
-  }
-}
-
-#endif
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
