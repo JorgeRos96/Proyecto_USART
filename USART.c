@@ -77,14 +77,15 @@ int init_USART (void){
 int tx_USART (char ch[], int size ){
 	int status = 0;
 	ARM_USART_STATUS st;
-
  	for (int i = 0; i<size; i++){
 		/*Envío de datos por la USART*/
 		status = USARTdrv->Send((uint8_t *)&ch[i], 1);
 		if(status != 0) 
 			return status;
+		
+		st = USARTdrv->GetStatus();
 		/* Espera necesaria a que se termine el envío de datos, que se visualiza en el bit TC del registro SR de la USART*/
-		while (!(USART3->SR & (1<<6)));
+		while (st.tx_busy)		st = USARTdrv->GetStatus();
 	}
 	
 	return status;
