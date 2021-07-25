@@ -78,7 +78,7 @@ int main(void)
 	
 	
 	/* Texto que se desea enviar*/
-	size = sprintf(buf,"\r Texto de prueba satisfactoria\n");
+	size = sprintf(buf,"\rTexto de prueba satisfactoria\n");
 	/* Envío del array al terminal a traves de la función tx_USART de la librería USART*/
 	if (tx_USART(buf, size) != 0)
 		Error_Handler(3);
