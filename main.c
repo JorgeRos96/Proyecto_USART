@@ -33,6 +33,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "USART.h"
+#include "Watchdog.h"
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -49,7 +50,9 @@ int size = 0;
   */
 int main(void)
 {
-
+	/*Inicialización del IWDG*/
+	if (init_Watchdog() != 0)
+			Error_Handler(4);
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
        - Systick timer is configured by default as source of time base, but user 
@@ -86,6 +89,7 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
+		reset_Watchdog();
   }
 }
 
@@ -177,18 +181,22 @@ static void SystemClock_Config(void)
 static void Error_Handler(int fallo)
 {
 	if(fallo == 0)
-	/* Mensaje si se ha producido un error en la inicializacón de la librería HAL*/
-	printf(buf,"\r Se ha producido un error al inicializar la librería HAL\n");
+		/* Mensaje si se ha producido un error en la inicializacón de la librería HAL*/
+		printf(buf,"\r Se ha producido un error al inicializar la librería HAL\n");
 	else if (fallo == 1)
-	/* Mensaje si se ha producido un error en la inicializacón del reloj del sistema*/
-	printf(buf,"\r Se ha producido un error al inicializar el reloj del sistema\n");
-		else if(fallo == 2)
-	/* Mensaje si se ha producido un error en la inicializacón de la USART*/
-	printf(buf,"\r Se ha producido un error al inicializar la USART\n");
-		else if (fallo == 3)
-	/* Mensaje si se ha producido un error en el envío de datos de la USART*/
-	printf(buf,"\r Se ha producido un error al enviar datos por la USART\n");
-  while(1)
+		/* Mensaje si se ha producido un error en la inicializacón del reloj del sistema*/
+		printf(buf,"\r Se ha producido un error al inicializar el reloj del sistema\n");
+	else if(fallo == 2)
+		/* Mensaje si se ha producido un error en la inicializacón de la USART*/
+		printf(buf,"\r Se ha producido un error al inicializar la USART\n");
+	else if (fallo == 3)
+		/* Mensaje si se ha producido un error en el envío de datos de la USART*/
+		printf(buf,"\r Se ha producido un error al enviar datos por la USART\n");
+	else if (fallo == 4)
+		/* Mensaje si se ha producido un error en la inicialización del Watchdog*/
+		printf(buf,"\r Se ha producido un error al inicializar el Watchdog\n");
+ 
+		while(1)
   {
 		
   }
