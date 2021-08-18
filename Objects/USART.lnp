@@ -1,8 +1,9 @@
 --cpu=Cortex-M4.fp
 ".\objects\main.o"
-".\objects\stm32f4xx_hal_msp.o"
 ".\objects\stm32f4xx_it.o"
 ".\objects\usart.o"
+".\objects\stm32f4xx_hal_msp.o"
+".\objects\watchdog.o"
 ".\objects\usart_stm32f4xx.o"
 ".\objects\stm32f4xx_hal.o"
 ".\objects\stm32f4xx_hal_cortex.o"
@@ -15,6 +16,7 @@
 ".\objects\stm32f4xx_hal_rcc_ex.o"
 ".\objects\startup_stm32f429xx.o"
 ".\objects\system_stm32f4xx.o"
+".\objects\stm32f4xx_hal_iwdg.o"
 --strict --scatter ".\Objects\USART.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
